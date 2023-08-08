@@ -1,14 +1,46 @@
-import Form from "./components/Form";
+import { useState, useEffect } from "react";
+
 import Header from "./components/Header";
-import PacientList from "./components/PacientList";
+import FormPacient from "./components/FormPacient";
+import PacientsList from "./components/PacientsList";
 
 function App() {
+  const [pacients, setPacients] = useState([]);
+  const [pacient, setPacient] = useState({});
+
+  useEffect(() => {
+    const getLocalStore = () => {
+      const pacientsLocalStore =
+        JSON.parse(localStorage.getItem("pacients")) ?? [];
+      setPacients(pacientsLocalStore);
+    };
+    getLocalStore();
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("pacients", JSON.stringify(pacients));
+  }, [pacients]);
+
+  const deletePacient = (id) => {
+    const currentPacients = pacients.filter((pacient) => pacient.id !== id);
+    setPacients(currentPacients);
+  };
+
   return (
     <div className="container mx-auto mt-20">
       <Header />
       <div className="mt-12 md:flex">
-        <Form />
-        <PacientList />
+        <FormPacient
+          pacient={pacient}
+          setPacient={setPacient}
+          pacients={pacients}
+          setPacients={setPacients}
+        />
+        <PacientsList
+          pacients={pacients}
+          setPacient={setPacient}
+          deletePacient={deletePacient}
+        />
       </div>
     </div>
   );
